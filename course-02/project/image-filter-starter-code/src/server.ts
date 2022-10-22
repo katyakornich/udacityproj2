@@ -1,6 +1,5 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { IndexRouter } from './controllers/v0/index.router';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
 
@@ -31,10 +30,7 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   /**************************************************************************** */
 
-  //app.use('/api/controllers/', IndexRouter)
-
 app.get( "/filteredimage", async ( req, res ) => {
-  //res.send("TODO endpoint: filteredimage?image_url={{}}")
   if (req.query.image_url) // parameter name validation
     {
         if (isValidUrl(req.query.image_url)) // parameter value validation
@@ -72,9 +68,6 @@ const isValidUrl = (urlString: string)=> {
 '(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
 return !!urlPattern.test(urlString);
 }
-
-app.use('/api/v0/', IndexRouter)
-//app.use('/controllers/v0/', IndexRouter)
   //! END @TODO1
   
 
