@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
+
 (async () => {
 
   // Init the Express application
@@ -29,12 +30,51 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
 
   /**************************************************************************** */
 
+app.get( "/filteredimage", async ( req, res ) => {
+  if (req.query.image_url) // parameter name validation
+    {
+        if (isValidUrl(req.query.image_url)) // parameter value validation
+        {
+            try
+            {
+                var localFilteredImagePath = await filterImageFromURL(req.query.image_url);
+                res.status(200).sendFile(await filterImageFromURL(localFilteredImagePath));
+                const arrDeleteFiles: string[] = [localFilteredImagePath];
+                deleteLocalFiles(arrDeleteFiles);
+            }
+            catch (error)
+            {
+                res.status(415).send(error + "<p>Try this image instead: ?image_url=https://www.w3schools.com/whatis/img_http.jpg</p>");
+            }
+        }
+        else
+        {   
+            res.status(400).send("Invalid parameter value");
+        }
+    }
+    else
+    {
+        res.status(400).send("Invalid parameter name. Use ?image_url=");
+    }
+} );
+
+// credit https://www.freecodecamp.org/news/check-if-a-javascript-string-is-a-url/
+const isValidUrl = (urlString: string)=> {
+  var urlPattern = new RegExp('^(https?:\\/\\/)?'+ // validate protocol
+'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // validate domain name
+'((\\d{1,3}\\.){3}\\d{1,3}))'+ // validate OR ip (v4) address
+'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // validate port and path
+'(\\?[;&a-z\\d%_.~+=-]*)?'+ // validate query string
+'(\\#[-a-z\\d_]*)?$','i'); // validate fragment locator
+return !!urlPattern.test(urlString);
+}
   //! END @TODO1
   
+
   // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async ( req, res ) => {
-    res.send("try GET /filteredimage?image_url={{}}")
+    res.send("try GET /filteredimage?image_url={{}} updated")
   } );
   
 
